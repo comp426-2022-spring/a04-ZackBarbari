@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/comp426-2022-spring/a04-ZackBarbari/issues"
   },
-  "homepage": "https://github.com/comp426-2022-spring/a04-ZackBarbari#readme"
+  "homepage": "https://github.com/comp426-2022-spring/a04-ZackBarbari#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "minimist": "^1.2.6"
+  }
 }
