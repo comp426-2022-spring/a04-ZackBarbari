@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const args = require('minimist')(process.argv.slice(2))
-//const db = require("./database.js")
+const db = require("./database.js")
 
 args["port"]
 args["argument"]
