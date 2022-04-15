@@ -2,7 +2,7 @@ const Database = require('better-sqlite3')
 
 const db = new Database('log.db')
 
-const isInitialized = db.prepare(`SELECT name FROM sqlite_master WHERE type="table" and name="accesslog";`)
+const isInitialized = db.prepare(`SELECT name FROM sqlite_master WHERE type='table' and name='accesslog';`)
 
 if (isInitialized.get() == undefined) {
     const sql = `

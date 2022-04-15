@@ -34,6 +34,19 @@ const server = app.listen(port, () => {
     console.log('App listening on port %PORT%'.replace('%PORT%', port))
 });
 
+const log = (req, res, next) => {
+  const query = db.prepare(`
+  INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `
+  )
+  const json = query.run(req.ip, req.user, Date.now(), req.method, req.url, req.httpVersion, req.protocol, req.statusCode, req.headers['referers'], req.headers['user-agent']
+  )
+  next()
+}
+
+app.use(log)
+
 app.get('/app/', (req, res) => {
       res.statusCode = 200;
       res.statusMessage = 'OK';
