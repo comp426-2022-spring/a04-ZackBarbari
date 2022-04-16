@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 const args = require('minimist')(process.argv.slice(2))
+const fs = require('fs')
+const morgan = require('morgan')
 const db = require("./database.js")
 
 args["port"]
@@ -35,11 +37,8 @@ const server = app.listen(port, () => {
 });
 
 const log = (req, res, next) => {
-  const query = db.prepare(`
-  INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `
-  )
+  const query = db.prepare(`INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `)
   const json = query.run(req.ip, req.user, Date.now(), req.method, req.url, req.httpVersion, req.protocol, req.statusCode, req.headers['referers'], req.headers['user-agent']
   )
   next()
