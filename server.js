@@ -32,16 +32,16 @@ if (args.help || args.h) {
     process.exit(0)
 }
 
-const port = args.port || process.env.PORT || 5555;
+const port = args.port ? args.port : 5555
 const logs = args.log ? args.log : "true"
 const debug = args.debug ? args.debug : "false"
 const server = app.listen(port, () => {
     console.log('App listening on port %PORT%'.replace('%PORT%', port))
 });
 
-if (log != "false") {
-  const stream = fs.createWriteStream('./access.log', {flags:"a"})
-  app.use(morgan("combined", {stream:stream}))
+if (logs != "false") {
+  const write = fs.createWriteStream('./access.log', {flags:'a'})
+  app.use(morgan('combined', {stream:write}))
 }
 
 app.use((req, res, next) => {
@@ -69,6 +69,17 @@ app.get('/app/', (req, res) => {
       res.end(res.statusCode+ ' ' +res.statusMessage);
       res.type("text/plain");
 });
+
+if (debug != "false") {
+  app.get(`/app/log/access`, (req, res) => {
+    try {
+      const query = db.prepare(`SELECT * FROM accesslog`).all()
+      res.status(200).json(query)
+    } catch {
+      console.log("EXIT")
+    }
+  })
+}
 
 function coinFlip() {
     if (Math.random() >= 0.5) {
