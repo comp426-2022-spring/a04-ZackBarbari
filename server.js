@@ -7,6 +7,8 @@ const db = require("./database.js")
 
 args["port"]
 args["argument"]
+args["log"]
+args["debug"]
 
 const help = (`
 server.js [options]
@@ -31,20 +33,35 @@ if (args.help || args.h) {
 }
 
 const port = args.port || process.env.PORT || 5555;
-
+const logs = args.log ? args.log : "true"
+const debug = args.debug ? args.debug : "false"
 const server = app.listen(port, () => {
     console.log('App listening on port %PORT%'.replace('%PORT%', port))
 });
 
-const log = (req, res, next) => {
-  const query = db.prepare(`INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `)
-  const json = query.run(req.ip, req.user, Date.now(), req.method, req.url, req.httpVersion, req.protocol, req.statusCode, req.headers['referers'], req.headers['user-agent']
-  )
-  next()
+if (logs != "false") {
+  const stream = fs.createWriteStream('./access.log', {flags:"a"})
+  app.use(morgan("combined", {stream:stream}))
 }
 
-app.use(log)
+app.use((req, res, next) => {
+  let logdata = {
+    remoteaddr: req.ip,
+    remoteuser: req.user,
+    time: Date.now(),
+    method: req.method,
+    url: req.url,
+    protocol: req.protocol,
+    httpversion: req.httpVersion,
+    status: res.statusCode,
+    referer: req.headers['referer'],
+    useragent: req.headers['user-agent']
+}
+const query = db.prepare(`INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+const json = query.run(req.ip, req.user, Date.now(), req.method, req.url, req.httpVersion, req.protocol, req.statusCode, req.headers['referers'], req.headers['user-agent'])
+res.status(200)
+next()
+});
 
 app.get('/app/', (req, res) => {
       res.statusCode = 200;
