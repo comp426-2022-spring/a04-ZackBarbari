@@ -1,10 +1,11 @@
 const express = require('express')
 const app = express()
 const args = require('minimist')(process.argv.slice(2))
-const db = require("./database.js")
+import {getDb} from './database.js'
 
 args["port"]
 args["argument"]
+const db = getDb()
 
 const port = args.port || process.env.PORT || 5000;
 

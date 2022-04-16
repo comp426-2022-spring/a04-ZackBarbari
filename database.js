@@ -17,3 +17,7 @@ if (isInitialized.get() == undefined) {
 } else {
     console.log('Database located.')
 }
+
+export function getDb() {
+    return db
+}
