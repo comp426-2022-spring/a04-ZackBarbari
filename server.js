@@ -1,13 +1,10 @@
 const express = require('express')
 const app = express()
 const args = require('minimist')(process.argv.slice(2))
-import {getDb} from './database.js'
+const db = require("./database.js")
 
 args["port"]
 args["argument"]
-const db = getDb()
-
-const port = args.port || process.env.PORT || 5000;
 
 const help = (`
 server.js [options]
@@ -30,6 +27,8 @@ if (args.help || args.h) {
     console.log(help)
     process.exit(0)
 }
+
+const port = args.port || process.env.PORT || 5555;
 
 const server = app.listen(port, () => {
     console.log('App listening on port %PORT%'.replace('%PORT%', port))
